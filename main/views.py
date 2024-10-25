@@ -1,8 +1,12 @@
+#main/views.py
+
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.forms import UserCreationForm, AuthenticationForm
-from django.contrib.auth import login, logout
+from django.contrib.auth import login, logout, update_session_auth_hash
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
+from django.contrib import messages
+from django.db.models import Q
 from .views import Post, Comment, Like
 from .forms import PostForm, CommentForm, UsernameChangeForm
 
@@ -124,6 +128,41 @@ def user_profile(request, username):
     return render(request, 'user_profile.html', context)
 
 
+#Profiilin katselu 'vieraana'
+def guest_profile(request, username):
+    user = get_object_or_404(User, username=username)
+    posts = Post.objects.filter(user = user)
+    context = {'profile_user': user,  'posts': posts}
+    return render(request, 'guest_profile.html', context)
+
+
+#Käyttäjä nimen vaihto
+@login_required
+def change_username(request):
+    if request.method == 'POST':
+        form = UsernameChangeForm(request.POST, instance=request.user)
+        if form.is_valid():
+            user = form.save()
+            update_session_auth_hash(request, user)
+            messages.succes(request, 'Käyttäjänimi vaihdettu.')
+            return redirect('user_profile', user.username)
+    else:
+        form = UsernameChangeForm(instance=request.user)
+    context = {'form': form}    
+    return render(request, 'change_username.html', context)
+
+
+#käyttäjien haku
+def search_users(request):
+    query = request.GET.get('q',' ')
+    users = User.objects.filter(
+        Q(username__icontains=query) |
+        Q(first_name__icontains=query) |
+        Q(last_name__icontains=query)
+    )
+    context = {'users': users, 'query': query}
+    return render(request, 'search_users.html', context)
 
 
 
+#ok
