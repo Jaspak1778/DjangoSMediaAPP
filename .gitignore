@@ -1,0 +1,46 @@
+# Python-kohteet
+*.pyc
+*.pyo
+*.pyd
+__pycache__/
+*.swp
+
+# Virtualenv
+venv/
+env/
+ENV/
+.VENV/
+*.env
+
+# Django migrations
+*/migrations/*
+
+# Database tiedostot
+*.sqlite3
+
+# Static ja media tiedostot
+staticfiles/
+media/
+
+# VS Code editori asetukset
+.vscode/
+
+# PyCharm asetukset
+.idea/
+
+# MacOS kohteet
+.DS_Store
+
+# Git asetukset ja tilapäistiedostot
+*.log
+*.pot
+*.mo
+*.tmp
+*.backup
+*.swp
+*.swo
+*.orig
+*.bak
+*.save
+*.envrc
+main/settings.py
