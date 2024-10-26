@@ -1,0 +1,23 @@
+TODO:
+
+vierailijalle näkyvä profiilin katselu.
+
+REST Api:
+
+asenna django restframework (virtuaali ympäristössä!!)  - DONE
+main/
+    serializers.py                                      - DONE
+    viimeistele api-views.py                            - DONE
+    conffaa ursl.py                                     - DONE
+    pip install django-cors-headers                     - DONE
+
+Komennot:
+
+##luo pakettien asennus tiedosto:
+
+bash: pip freeze > requirements.txt
+
+
+/*Asenna paketit requirements.txt tiedoston avulla*/
+
+bash: pip install -r requirements.txt
