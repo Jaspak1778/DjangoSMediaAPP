@@ -11,7 +11,7 @@ from django.contrib.auth import update_session_auth_hash
 from django.contrib import messages
 from django.db.models import Q
 
-# Signup View
+#Luo tunnukset
 def signup(request):
     if request.method == 'POST':
         form = UserCreationForm(request.POST)
@@ -23,7 +23,7 @@ def signup(request):
         form = UserCreationForm()
     return render(request, 'signup.html', {'form': form})
 
-# Login View 
+#Kirjaudu
 def login_view(request):
     if request.method == 'POST':
         form = AuthenticationForm(data=request.POST)
@@ -35,13 +35,13 @@ def login_view(request):
         form = AuthenticationForm()
     return render(request, 'login.html', {'form': form})
 
-# Logout View 
+#Ulos kirjautuminen
 @login_required
 def logout_view(request):
     logout(request)
     return redirect('login')
 
-# View for Logged In User Feed and Logged Out User Feed
+# Syötteen katselu
 def feed(request):
     posts = Post.objects.all().order_by('-created_at')
     if request.user.is_authenticated:
@@ -49,7 +49,7 @@ def feed(request):
     else:
         return render(request, 'guest_feed.html', {'posts': posts})
     
-# View for Creating a Post
+#Lisää julkaisu
 @login_required
 def post_create(request):
     if request.method == 'POST':
@@ -63,14 +63,14 @@ def post_create(request):
         form = PostForm()
     return render(request, 'post_create.html', {'form': form})
 
-# View for Deleting a Post
+#Poista julkaisu
 @login_required
 def post_delete(request, pk):
     post = get_object_or_404(Post, pk=pk, user=request.user)
     post.delete()
     return redirect('feed')
 
-# View for Commenting on a Post
+#Kommentointi
 @login_required
 def comment_create(request, pk):
     post = get_object_or_404(Post, pk=pk)
@@ -86,14 +86,14 @@ def comment_create(request, pk):
         form = CommentForm()
     return render(request, 'comment_create.html', {'form': form, 'post': post})
 
-# View for Deleting a Comment
+#Poista kommentti
 @login_required
 def comment_delete(request, pk):
     comment = get_object_or_404(Comment, pk=pk, user=request.user)
     comment.delete()
     return redirect('feed')
 
-# View for Liking a Post
+
 @login_required
 def like(request, pk):
     post = get_object_or_404(Post, pk=pk)
@@ -103,7 +103,7 @@ def like(request, pk):
     like_count = Like.objects.filter(post=post).count()
     return redirect('feed')
 
-# View for showing a user's profile
+
 def user_profile(request, username):
     user = get_object_or_404(User, username=username)
     posts = Post.objects.filter(user=user)
@@ -115,13 +115,13 @@ def user_profile(request, username):
     }
     return render(request, 'user_profile.html', context)
 
-# View for showing a other user's profile for logged out users
+
 def guest_profile(request, username):
     user = get_object_or_404(User, username=username)
     posts = Post.objects.filter(user=user)
     return render(request, 'guest_profile.html', {'profile_user': user, 'posts': posts})
 
-# View for changing a user's username
+
 @login_required
 def change_username(request):
     if request.method == 'POST':
@@ -135,7 +135,7 @@ def change_username(request):
         form = UsernameChangeForm(instance=request.user)
     return render(request, 'change_username.html', {'form': form})
 
-# View for searching users
+
 def search_users(request):
     query = request.GET.get('q', '')
     users = User.objects.filter(
@@ -144,4 +144,3 @@ def search_users(request):
         Q(last_name__icontains=query)
     )
     return render(request, 'search_users.html', {'users': users, 'query': query})
-
