@@ -42,7 +42,7 @@ Tietokannan migraatiot
 
 Käynnistä kehityspalvelin
 
-    python manage.py runserver`
+    python manage.py runserver
 
 Käyttöohjeet:
 
