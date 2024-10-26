@@ -1,17 +1,17 @@
-#main/views.py
+# core/views.py
 
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.forms import UserCreationForm, AuthenticationForm
-from django.contrib.auth import login, logout, update_session_auth_hash
+from django.contrib.auth import login, logout
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
+from .models import Post, Comment, Like
+from .forms import PostForm, CommentForm, UsernameChangeForm
+from django.contrib.auth import update_session_auth_hash
 from django.contrib import messages
 from django.db.models import Q
-from .views import Post, Comment, Like
-from .forms import PostForm, CommentForm, UsernameChangeForm
 
-
-#Luo tunnukset funktio
+# Signup View
 def signup(request):
     if request.method == 'POST':
         form = UserCreationForm(request.POST)
@@ -21,40 +21,35 @@ def signup(request):
             return redirect('feed')
     else:
         form = UserCreationForm()
-    context = {'form':form}
-    return render(request, 'signup.html', context)
+    return render(request, 'signup.html', {'form': form})
 
-
-#Kirjaudu funktio
+# Login View 
 def login_view(request):
-    if request.method =='POST':
-        form = AuthenticationForm(request.POST)
+    if request.method == 'POST':
+        form = AuthenticationForm(data=request.POST)
         if form.is_valid():
             user = form.get_user()
             login(request, user)
             return redirect('feed')
     else:
         form = AuthenticationForm()
-    context = {'form':form}
-    return render(request, 'login.html', context)
+    return render(request, 'login.html', {'form': form})
 
-
-#Uloskirjautuminen
+# Logout View 
 @login_required
 def logout_view(request):
     logout(request)
     return redirect('login')
 
-
-#syöte näkymä, eri kirjautuneelle sekä uloskirjautuneelle
+# View for Logged In User Feed and Logged Out User Feed
 def feed(request):
     posts = Post.objects.all().order_by('-created_at')
-    context = {'posts': posts}
-    template = 'feed.html' if request.user.is_authenticated else 'guest_feed.html'
-    return render(request, template, context)
-
-
-#Luo julkaisu
+    if request.user.is_authenticated:
+        return render(request, 'feed.html', {'posts': posts})
+    else:
+        return render(request, 'guest_feed.html', {'posts': posts})
+    
+# View for Creating a Post
 @login_required
 def post_create(request):
     if request.method == 'POST':
@@ -66,23 +61,20 @@ def post_create(request):
             return redirect('feed')
     else:
         form = PostForm()
-    context = {'form':form}    
-    return render(request, 'post_create.html', context)
+    return render(request, 'post_create.html', {'form': form})
 
-
-#Julkaisun poisto
+# View for Deleting a Post
 @login_required
 def post_delete(request, pk):
     post = get_object_or_404(Post, pk=pk, user=request.user)
     post.delete()
     return redirect('feed')
 
-
-#Kommentointi
+# View for Commenting on a Post
 @login_required
 def comment_create(request, pk):
     post = get_object_or_404(Post, pk=pk)
-    if request.method  == 'POST':
+    if request.method == 'POST':
         form = CommentForm(request.POST)
         if form.is_valid():
             comment = form.save(commit=False)
@@ -92,77 +84,64 @@ def comment_create(request, pk):
             return redirect('feed')
     else:
         form = CommentForm()
-    context = {'form':form, 'post':post}    
-    return render(request, 'comment_create.html', context)
+    return render(request, 'comment_create.html', {'form': form, 'post': post})
 
-
-#Kommentin poisto
+# View for Deleting a Comment
 @login_required
 def comment_delete(request, pk):
     comment = get_object_or_404(Comment, pk=pk, user=request.user)
     comment.delete()
     return redirect('feed')
 
-
-#Tykkäys toiminto
+# View for Liking a Post
 @login_required
-def like(request, username):
-    post = get_object_or_404(User, username=username)
-    like_obj, created = Like.objects.get_or_create(user=request.user, post = post)
+def like(request, pk):
+    post = get_object_or_404(Post, pk=pk)
+    like_obj, created = Like.objects.get_or_create(user=request.user, post=post)
     if not created:
         like_obj.delete()
     like_count = Like.objects.filter(post=post).count()
     return redirect('feed')
 
-
-#Käyttäjän profili näkymä
+# View for showing a user's profile
 def user_profile(request, username):
-    user = get_object_or_404(User, username= username)
-    posts =  Post.objects.filter(user=user)
+    user = get_object_or_404(User, username=username)
+    posts = Post.objects.filter(user=user)
     likes = Like.objects.filter(user=user)
     context = {
-        'profile_user' : user,
-        'posts' : posts,
-        'likes' : likes,
+        'profile_user': user,
+        'posts': posts,
+        'likes': likes,
     }
     return render(request, 'user_profile.html', context)
 
-
-#Profiilin katselu 'vieraana'
+# View for showing a other user's profile for logged out users
 def guest_profile(request, username):
     user = get_object_or_404(User, username=username)
-    posts = Post.objects.filter(user = user)
-    context = {'profile_user': user,  'posts': posts}
-    return render(request, 'guest_profile.html', context)
+    posts = Post.objects.filter(user=user)
+    return render(request, 'guest_profile.html', {'profile_user': user, 'posts': posts})
 
-
-#Käyttäjä nimen vaihto
+# View for changing a user's username
 @login_required
 def change_username(request):
     if request.method == 'POST':
         form = UsernameChangeForm(request.POST, instance=request.user)
         if form.is_valid():
             user = form.save()
-            update_session_auth_hash(request, user)
-            messages.succes(request, 'Käyttäjänimi vaihdettu.')
+            update_session_auth_hash(request, user)  # Update session to keep user logged in
+            messages.success(request, 'Your username has been updated.')
             return redirect('user_profile', user.username)
     else:
         form = UsernameChangeForm(instance=request.user)
-    context = {'form': form}    
-    return render(request, 'change_username.html', context)
+    return render(request, 'change_username.html', {'form': form})
 
-
-#käyttäjien haku
+# View for searching users
 def search_users(request):
-    query = request.GET.get('q',' ')
+    query = request.GET.get('q', '')
     users = User.objects.filter(
         Q(username__icontains=query) |
         Q(first_name__icontains=query) |
         Q(last_name__icontains=query)
     )
-    context = {'users': users, 'query': query}
-    return render(request, 'search_users.html', context)
+    return render(request, 'search_users.html', {'users': users, 'query': query})
 
-
-
-#ok

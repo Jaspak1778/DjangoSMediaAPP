@@ -1,30 +1,54 @@
-#main/urls.py
-from django.shortcuts import redirect  
-from django.urls import path, re_path  
-from . import views  
+# main/urls.py
 
-# Funktio, joka ohjaa käyttäjän feed-sivulle
+from rest_framework.routers import DefaultRouter
+from .api_views import PostViewSet, CommentViewSet, LikeViewSet
+from django.urls import path, re_path, include
+from . import views
+from django.shortcuts import redirect
+
+# REST API reititys
+router = DefaultRouter()
+router.register(r'posts', PostViewSet)
+router.register(r'comments', CommentViewSet)
+router.register(r'likes', LikeViewSet)
+
+# Ohjataan käyttäjä syötteeseen
 def redirect_to_feed(request):
-    return redirect('feed')  
-
-urlpatterns = [
+    # Tarkistetaan, onko käyttäjä kirjautunut
+    if request.user.is_authenticated:
+        return redirect('feed')
+    else:
+        return redirect('login')
     
-    path('', redirect_to_feed),  # Tyhjä reitti (etusivu) ohjaa feed-sivulle
-    path('signup/', views.signup, name='signup'),  # Käyttäjän rekisteröitymissivu
-    path('login/', views.login_view, name='login'),  # Kirjautumissivu
-    path('logout/', views.feed, name='logout'),  # Uloskirjautumissivu, joka ohjaa feed-sivulle (tarkistettava, onko tämä oikea logout-toiminto)
-    path('feed/', views.feed, name='feed'),  # Sivusto, jossa näytetään kaikki julkaisut (feed)
-    path('post/create/', views.post_create, name='post_create'),  # Julkaisun luontisivu
-    path('post/<int:pk>/delete', views.post_delete, name='post_delete'),  # Tietyn julkaisun poistaminen sen id-tunnisteen perusteella
-    path('post/<int:pk>/comment/', views.comment_create, name='comment_create'),  # Kommentin luontisivu tietylle julkaisulle id-tunnisteen perusteella
-    path('comment/<int:pk>/delete/', views.comment_delete, name='comment_delete'),  # Kommentin poistaminen id-tunnisteen perusteella
-    path('post/<int:pk>/like/', views.like, name='like'),  # Tykkäystoiminto tietylle julkaisulle id-tunnisteen perusteella
-    re_path(r'^profile/(?!change-username/)(?P<username>\w+)/$', views.user_profile, name='user_profile'),  # regex.Profiilisivu käyttäjän käyttäjänimen perusteella, mutta ohittaa change-username-polun
-    path('guest/profile/<str:username>/', views.guest_profile, name='guest_profile'),  # Vierailijaprofiilisivu tietyn käyttäjän käyttäjänimen perusteella
-    path('profile/change-username/', views.change_username, name='change_username'),  # Käyttäjänimen vaihtosivu
-    path('search/', views.search_users, name='search_users'),  # Käyttäjähaun sivu
-]
+# URLS
+urlpatterns = [
+    # REST API reitit
+    path('api/', include(router.urls)),
 
+    # Ohjataan etusivulta syöte-sivulle
+    path('', redirect_to_feed),
+
+    # Käyttäjän kirjautumiseen liittyvät reitit
+    path('signup/', views.signup, name='signup'),
+    path('login/', views.login_view, name='login'),
+    path('logout/', views.logout_view, name='logout'),
+
+    # Syötesivu ja postaukset
+    path('feed/', views.feed, name='feed'),
+    path('post/create/', views.post_create, name='post_create'),
+    path('post/<int:pk>/delete/', views.post_delete, name='post_delete'),
+    path('post/<int:pk>/comment/', views.comment_create, name='comment_create'),
+    path('comment/<int:pk>/delete/', views.comment_delete, name='comment_delete'),
+    path('post/<int:pk>/like/', views.like, name='like'),
+
+    # Käyttäjäprofiilit
+    re_path(r'^profile/(?!change-username/)(?P<username>\w+)/$', views.user_profile, name='user_profile'),
+    path('guest/profile/<str:username>/', views.guest_profile, name='guest_profile'),
+    path('profile/change-username/', views.change_username, name='change_username'),
+
+    # Käyttäjien haku
+    path('search/', views.search_users, name='search_users'),
+]
 
 
 #ok

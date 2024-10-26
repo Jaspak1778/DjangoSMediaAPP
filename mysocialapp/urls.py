@@ -4,7 +4,7 @@ from django.urls import path, include
 #reitti main apin urleihin
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('',include('main.ulrs'))
+    path('',include('main.urls'))
 ]
 
 

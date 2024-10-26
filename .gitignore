@@ -1,3 +1,7 @@
+# .gitignore
+
+# E:\Koodi\DJANGO\DjangoSCM\mysocialapp\.gitignore
+
 # Python-kohteet
 *.pyc
 *.pyo
@@ -21,6 +25,9 @@ ENV/
 # Static ja media tiedostot
 staticfiles/
 media/
+
+# Ignore templates directories
+*/templates/
 
 # VS Code editori asetukset
 .vscode/
