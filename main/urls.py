@@ -1,7 +1,7 @@
 # main/urls.py
 
 from rest_framework.routers import DefaultRouter
-from .api_views import PostViewSet, CommentViewSet, LikeViewSet
+from .api_views import PostViewSet, CommentViewSet, LikeViewSet, login_view, logout_view
 from django.urls import path, re_path, include
 from . import views
 from django.shortcuts import redirect
@@ -24,6 +24,8 @@ def redirect_to_feed(request):
 urlpatterns = [
     # REST API reitit
     path('api/', include(router.urls)),
+    path('api/login/', login_view, name='api_login'),
+    path('api/logout/', logout_view, name='api_logout'),
 
     # Ohjataan etusivulta syöte-sivulle
     path('', redirect_to_feed),
