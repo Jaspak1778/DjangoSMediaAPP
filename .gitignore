@@ -51,3 +51,4 @@ media/
 *.save
 *.envrc
 mysocialapp/settings.py
+secret.py
