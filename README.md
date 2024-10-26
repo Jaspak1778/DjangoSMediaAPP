@@ -13,6 +13,10 @@ Kansion sisällä osoite kenttään cmd ja anna komento
 
     git clone <repon-url>
 
+Avaa projekti taso
+
+    cd DjangoSMediaAPP
+
 Avaa IDE antamalla komento.
     
     code .
