@@ -27,7 +27,7 @@ Luo virtuaali ympäristö IDE:n terminaalissa.
 
 Ja aktivoi virtuaaliympäristö IDE:n terminaalissa.
 
-    Windows: venv\Scripts\activate
+    venv\Scripts\activate
 
 Asenna riippuvuudet
 Varmista, että virtuaaliympäristö on aktivoitu ennen asennusta:
@@ -59,6 +59,6 @@ API-päätepisteet
 
 *Muutoksia tulossa*
 
-*TODO - REST Kirjautuminen.*
+*TODO - REST Kirjautuminen.* ##Testauksessa
 
 *TODO - Poistetaan testi aikaiset koodit, jotta vain REST toimintaan tarvittavat koodit on esillä, selkeyden vuoksi.*
