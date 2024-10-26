@@ -8,37 +8,40 @@ Sovelluksen tarkoituksena on tarjota CRUD-toiminnot postauksille, kommenteille j
 ##
 Asennus
 
-Kloonaa repo
+Kloonaa repo uuteen kansioon jonka voit nimetä miten vain.
+Kansion sisällä osoite kenttään cmd ja anna komento
 
-`git clone <repon-url>`
-`cd <projektin-hakemisto>`
+    git clone <repon-url>
 
-Luo virtuaaliympäristö
+Samassa komento kehotteessa luo virtuaaliympäristö.
 
-`python -m venv venv`
+    python -m venv venv
 
-Aktivoi virtuaaliympäristö
+Avaa IDE antamalla komento.
+    
+    code .
+
+Aktivoi virtuaaliympäristö iden terminaalissa.
 
     Windows: venv\Scripts\activate
-
 
 Asenna riippuvuudet
 Varmista, että virtuaaliympäristö on aktivoitu ennen asennusta:
 
-```
-pip install -r requirements.txt
+
+    pip install -r requirements.txt
 
 Tietokannan migraatiot
 
-python manage.py makemigrations
-python manage.py migrate
-```
+    python manage.py makemigrations
+    python manage.py migrate
+
 
 Käynnistä kehityspalvelin
 
-`python manage.py runserver`
+    python manage.py runserver`
 
-Käyttöohjeet
+Käyttöohjeet:
 
 Avaa selain osoitteeseen:
 
