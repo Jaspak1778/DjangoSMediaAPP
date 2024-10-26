@@ -13,21 +13,20 @@ Kansion sisällä osoite kenttään cmd ja anna komento
 
     git clone <repon-url>
 
-Samassa komento kehotteessa luo virtuaaliympäristö.
-
-    python -m venv venv
-
 Avaa IDE antamalla komento.
     
     code .
 
-Aktivoi virtuaaliympäristö iden terminaalissa.
+Luo virtuaali ympäristö IDE:n terminaalissa.
+
+    python -m venv venv
+
+Ja aktivoi virtuaaliympäristö IDE:n terminaalissa.
 
     Windows: venv\Scripts\activate
 
 Asenna riippuvuudet
 Varmista, että virtuaaliympäristö on aktivoitu ennen asennusta:
-
 
     pip install -r requirements.txt
 
